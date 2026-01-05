@@ -7,7 +7,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline
 
 # Copiamos el código fuente y compilamos
-COPY src ./src
+COPY src ej_inventado/src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Ejecución
