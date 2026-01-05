@@ -1,29 +1,26 @@
-# Stage 1: Build the application
 FROM eclipse-temurin:17-jdk AS builder
-
-# Set the working directory
 WORKDIR /app
 
-# Copy the application code
-COPY . .
+# 1. Copiamos los archivos necesarios del wrapper
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
 
-# Given permissions to mvnw
-RUN chmod +x mvnw
+# 2. SOLUCIÓN AL ERROR 0.7s:
+# - Eliminamos caracteres \r de Windows (CRLF -> LF)
+# - Damos permisos de ejecución
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
 
-# Build the application (requires Maven or Gradle)
+# 3. Descargamos dependencias
+RUN ./mvnw dependency:go-offline
+
+# 4. Copiamos código y compilamos
+COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Run the application
+# Etapa de ejecución
 FROM eclipse-temurin:17-jre
-
-# Set the working directory
 WORKDIR /app
+COPY --from=builder /app/target/ej_inventado-0.0.1-SNAPSHOT.jar app.jar
 
-# Copy the JAR file from the builder stage
-COPY --from=builder /app/target/*.jar app.jar
-
-# Expose the port the app will run on
 EXPOSE 8080
-
-# Command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
