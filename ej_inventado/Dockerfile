@@ -1,29 +1,24 @@
-# Stage 1: Build the application
+# Etapa 1: Build
 FROM eclipse-temurin:17-jdk AS builder
-
-# Set the working directory
 WORKDIR /app
 
-# Copy the application code
-COPY . .
+# Copiamos los archivos de Maven para aprovechar la caché
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw dependency:go-offline
 
-# Given permissions to mvnw
-RUN chmod +x ej_inventado/mvnw
+# Copiamos el código fuente y compilamos
+COPY src ./src
+RUN ./mvnw clean package -DskipTests
 
-# Build the application (requires Maven or Gradle)
-RUN ej_inventado/mvnw clean package -DskipTests
-
-# Stage 2: Run the application
+# Etapa 2: Run
 FROM eclipse-temurin:17-jre
-
-# Set the working directory
 WORKDIR /app
 
-# Copy the JAR file from the builder stage
-COPY --from=builder /app/target/*.jar app.jar
+# Usamos el nombre exacto que genera tu pom.xml para evitar errores
+# El JAR se genera en target/ej_inventado-0.0.1-SNAPSHOT.jar
+COPY --from=builder /app/target/ej_inventado-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose the port the app will run on
 EXPOSE 8080
 
-# Command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
