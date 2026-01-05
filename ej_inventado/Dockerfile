@@ -1,11 +1,13 @@
 FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-# En lugar de copiar carpetas específicas, copiamos todo el contenido
-# de la carpeta donde estás ejecutando el comando build.
+# Copiamos todo el contenido de la carpeta actual al contenedor
 COPY . .
 
-# Compilamos (esto buscará el pom.xml y la carpeta src automáticamente)
+# Comando para ver qué hay dentro de /app y por qué falla (solo para debug)
+RUN ls -la
+
+# Compilamos. Si el pom.xml está en la raíz, funcionará.
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:17-jre
