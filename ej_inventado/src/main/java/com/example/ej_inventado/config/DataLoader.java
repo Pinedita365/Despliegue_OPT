@@ -72,7 +72,7 @@ public class DataLoader implements CommandLineRunner {
                     "Disfruta de la mejor ruta de vinos de la costa cantábrica.", "img/vino.jpg", "Usual"),
             new Gastronomica(Tipo.GASTRONOMICA, 180, 40, "Almeria", "Comida almeriense",
                     "Disfruta de la gastronomía almeriense acompañado de un grupo de personas con los mismos intereses.",
-                    "img/comidaalmeria.jpg", "Casual")
+                    "img/comidaAlmeria.jpg", "Casual")
         ));
 
         System.out.println("✅ Actividades iniciales cargadas en BD");
